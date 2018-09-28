@@ -32,6 +32,7 @@ public class ContentExtractorApplication {
     public static void main(String[] args) {
         List<ExtractedContent> content = ContentExtractorApplication.getUrls()
                 .map(ContentExtractorApplication::convertToDocument)
+                .filter(Objects::nonNull)
                 .map(ContentExtractorHelper::getComments)
                 .flatMap(Set::stream)
                 .map(ContentExtractorApplication::extractContent)
