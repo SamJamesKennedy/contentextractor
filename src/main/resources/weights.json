@@ -1,0 +1,12 @@
+{
+  "positiveCssClasses" : 35,
+  "positiveCssIds": 40,
+  "unlikelyCssClasses": -20,
+  "unlikelyCssIds": -20,
+  "negativeCssClasses": -50,
+  "negativeCssIds": -50,
+  "noMatch": -50,
+
+  "textLengthMin": 20,
+  "textLengthMax": 200
+}
