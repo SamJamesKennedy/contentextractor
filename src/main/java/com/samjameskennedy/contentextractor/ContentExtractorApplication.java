@@ -21,11 +21,10 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.samjameskennedy.contentextractor.extractor.CommentExtractor;
-import com.samjameskennedy.contentextractor.helpers.URLConverter;
 import com.samjameskennedy.contentextractor.helpers.ContentExtractorHelper;
+import com.samjameskennedy.contentextractor.helpers.URLConverter;
 import com.samjameskennedy.contentextractor.mention.ExtractedContent;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 public class ContentExtractorApplication {
 
@@ -35,8 +34,7 @@ public class ContentExtractorApplication {
                 .filter(Objects::nonNull)
                 .map(ContentExtractorHelper::getComments)
                 .flatMap(Set::stream)
-                .map(ContentExtractorApplication::extractContent)
-                .filter(Objects::nonNull)
+                .map(CommentExtractor::extractComment)
                 .collect(Collectors.toList());
         content.forEach(out::println);
 
@@ -69,27 +67,26 @@ public class ContentExtractorApplication {
         return document;
     }
 
-    public static ExtractedContent extractContent(Element comment) {
-        ExtractedContent content = CommentExtractor.extractComment(comment);
-        return content;
-    }
-
     public static Stream<URL> getUrls() {
         try {
-            Stream<String> urls = Files.lines(Paths.get(ClassLoader.getSystemResource("urls.txt").toURI()));
+            Stream<String> urls = Files.lines(Paths.get(ClassLoader.getSystemResource("urls.txt")
+                    .toURI()));
             return urls
                 .peek(out::println)
-                .map(spec -> {
-                try {
-                    return new URL(spec);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }).filter(Objects::nonNull);
+                .map(ContentExtractorApplication::getUrl)
+                .filter(Objects::nonNull);
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             return Stream.empty();
+        }
+    }
+
+    private static URL getUrl(String spec) {
+        try {
+            return new URL(spec);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
